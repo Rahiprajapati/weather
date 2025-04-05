@@ -1,0 +1,353 @@
+/* weather.css */
+body {
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  margin: 0;
+  padding: 20px;
+  transition: all 0.3s ease;
+}
+
+/* Light Theme */
+body.light-theme {
+  background-color: #f5f7fa;
+  color: #333;
+}
+
+/* Dark Theme */
+body.dark-theme {
+  background-color: #1a1a2e;
+  color: #e6e6e6;
+}
+
+.weather-container {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 20px;
+  background-color: #ffffff;
+  box-shadow: 0 0 20px rgba(0, 0, 0, 0.1);
+  border-radius: 10px;
+}
+
+.dark-theme .weather-container {
+  background-color: #16213e;
+  box-shadow: 0 0 20px rgba(0, 0, 0, 0.5);
+}
+
+/* Header Styles */
+.header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 30px;
+  padding-bottom: 15px;
+  border-bottom: 1px solid #eee;
+}
+
+.dark-theme .header {
+  border-bottom: 1px solid #333;
+}
+
+.header h2 {
+  margin: 0;
+  font-size: 28px;
+  color: #2c3e50;
+}
+
+.dark-theme .header h2 {
+  color: #e6e6e6;
+}
+
+.header-controls {
+  display: flex;
+  align-items: center;
+  gap: 15px;
+}
+
+/* Auth Buttons */
+.auth-buttons {
+  display: flex;
+  gap: 10px;
+}
+
+.user-actions {
+  display: flex;
+  align-items: center;
+  gap: 15px;
+}
+
+.user-info {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.favorites-count {
+  font-size: 0.9em;
+  color: #e74c3c;
+}
+
+/* Search Container */
+.search-container {
+  display: flex;
+  gap: 10px;
+  margin-bottom: 20px;
+}
+
+.search-container input {
+  flex: 1;
+  padding: 12px 15px;
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  font-size: 16px;
+  transition: all 0.3s;
+}
+
+.dark-theme .search-container input {
+  background-color: #2c3e50;
+  color: #e6e6e6;
+  border-color: #34495e;
+}
+
+.search-container input:focus {
+  outline: none;
+  border-color: #3498db;
+  box-shadow: 0 0 5px rgba(52, 152, 219, 0.5);
+}
+
+/* Buttons */
+button {
+  padding: 12px 20px;
+  border: none;
+  border-radius: 8px;
+  background-color: #3498db;
+  color: white;
+  font-size: 16px;
+  cursor: pointer;
+  transition: all 0.3s;
+}
+
+button:hover {
+  background-color: #2980b9;
+  transform: translateY(-2px);
+}
+
+.theme-toggle {
+  background-color: #2c3e50;
+}
+
+.favorite-btn {
+  padding: 5px 10px;
+  font-size: 20px;
+  background: none !important;
+  color: gold !important;
+}
+
+.favorite-btn:hover {
+  transform: scale(1.2);
+}
+
+/* Error Message */
+.error {
+  color: #e74c3c;
+  padding: 10px;
+  background-color: #fadbd8;
+  border-radius: 5px;
+  margin-bottom: 15px;
+}
+
+.dark-theme .error {
+  background-color: #4b2a2a;
+}
+
+/* Weather Cards */
+.weather-results {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+  gap: 20px;
+  margin-top: 20px;
+}
+
+.weather-card {
+  padding: 20px;
+  border-radius: 10px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  transition: all 0.3s;
+  position: relative;
+}
+
+.weather-card:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
+}
+
+.card-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 15px;
+}
+
+.card-header h3 {
+  margin: 0;
+  font-size: 20px;
+}
+
+.weather-card img {
+  width: 80px;
+  height: 80px;
+  margin: 10px auto;
+  display: block;
+}
+
+.weather-card p {
+  margin: 8px 0;
+  font-size: 16px;
+}
+
+/* Suggestions */
+.suggestions {
+  margin-top: 15px;
+  padding-top: 15px;
+  border-top: 1px dashed rgba(255, 255, 255, 0.5);
+}
+
+.suggestions h4 {
+  margin-bottom: 10px;
+  font-size: 16px;
+}
+
+.suggestions ul {
+  padding-left: 20px;
+  margin: 0;
+}
+
+.suggestions li {
+  margin-bottom: 5px;
+  font-size: 14px;
+}
+
+/* Favorites Section */
+.favorites-section {
+  margin: 30px 0;
+}
+
+.favorites-section h3 {
+  margin-bottom: 15px;
+  padding-bottom: 10px;
+  border-bottom: 1px solid #eee;
+}
+
+.dark-theme .favorites-section h3 {
+  border-bottom: 1px solid #333;
+}
+
+.favorites-list {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+  gap: 15px;
+}
+
+/* .favorite-item {
+  padding: 15px;
+  background-color: rgba(255, 255, 255, 0.1);
+  border-radius: 8px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  transition: all 0.3s;
+} */
+.favorite-item {
+  border: 2px solid gold;
+  padding: 10px;
+  border-radius: 8px;
+  background-color: rgba(255, 215, 0, 0.1);
+}
+
+.dark-theme .favorite-item {
+  background-color: rgba(255, 255, 255, 0.05);
+}
+
+.favorite-item:hover {
+  background-color: rgba(255, 255, 255, 0.2);
+  transform: translateY(-3px);
+}
+
+.favorite-item img {
+  width: 50px;
+  height: 50px;
+  margin: 5px 0;
+}
+
+.favorite-item span {
+  text-align: center;
+  margin: 3px 0;
+  font-size: 14px;
+}
+
+/* Auth Modal */
+.auth-modal {
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  background-color: white;
+  padding: 30px;
+  border-radius: 10px;
+  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+  z-index: 100;
+  width: 90%;
+  max-width: 400px;
+}
+
+.dark-theme .auth-modal {
+  background-color: #16213e;
+  border: 1px solid #0f3460;
+}
+
+.auth-modal h3 {
+  margin-top: 0;
+  margin-bottom: 20px;
+  text-align: center;
+}
+
+.auth-modal input {
+  width: 100%;
+  padding: 12px;
+  margin-bottom: 15px;
+  border: 1px solid #ddd;
+  border-radius: 5px;
+  font-size: 16px;
+}
+
+.dark-theme .auth-modal input {
+  background-color: #2c3e50;
+  color: #e6e6e6;
+  border-color: #34495e;
+}
+
+.modal-buttons {
+  display: flex;
+  justify-content: space-between;
+  gap: 10px;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .header {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 15px;
+  }
+  
+  .header-controls {
+    width: 100%;
+    justify-content: space-between;
+  }
+  
+  .weather-results {
+    grid-template-columns: 1fr;
+  }
+  
+  .favorites-list {
+    grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+  }
+}
