@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import "./weather.css";
 
-const API_KEY = "ddf790bfc6568bddb64d0be20664f6f9"; 
+const API_KEY = "ddf790bfc6568bddb64d0be20664f6f9";
 
 const Weather = () => {
   const [city, setCity] = useState("");
@@ -9,11 +9,6 @@ const Weather = () => {
   const [favorites, setFavorites] = useState([]);
   const [error, setError] = useState("");
   const [suggestions, setSuggestions] = useState([]);
-  const [darkMode, setDarkMode] = useState(false);
-
-  useEffect(() => {
-    document.body.classList.toggle("dark-theme", darkMode);
-  }, [darkMode]);
 
   // Fetch weather
   const fetchWeather = async () => {
@@ -57,21 +52,17 @@ const Weather = () => {
   };
 
   return (
-    <div className={`weather-container ${darkMode ? "dark-theme" : ""}`}>
+    <div className="weather-container">
       <div className="header">
-        <h2>Weather App</h2>
-        <div className="header-controls">
-          <button className="theme-toggle" onClick={() => setDarkMode(!darkMode)}>
-            {darkMode ? "☀️ Light" : "🌙 Dark"}
-          </button>
-        </div>
+        <h2>🌤️ Weather App</h2>
+        <button className="login-btn">Login</button>
       </div>
 
       <div className="search-container">
-        <div style={{ position: "relative", width: "100%", maxWidth: "400px" }}>
+        <div className="input-wrapper">
           <input
             type="text"
-            placeholder="Enter Indian city..."
+            placeholder="Enter Indian city name..."
             value={city}
             onChange={(e) => handleCityChange(e.target.value)}
             onKeyPress={(e) => e.key === "Enter" && fetchWeather()}
@@ -113,20 +104,22 @@ const Weather = () => {
               src={`https://openweathermap.org/img/wn/${weather.weather[0].icon}@2x.png`}
               alt="icon"
             />
-            <p><b>{weather.weather[0].main}</b></p>
-            <p>🌡️ {weather.main.temp}°C</p>
-            <p>💧 Humidity: {weather.main.humidity}%</p>
-            <p>🌬️ Wind: {weather.wind.speed} m/s</p>
+            <p className="main-type">{weather.weather[0].main}</p>
+            <p>🌡️ {weather.main.temp.toFixed(1)}°C</p>
+            <p>💧 {weather.main.humidity}% Humidity</p>
+            <p>🌬️ {weather.wind.speed} m/s Wind</p>
           </div>
         </div>
       )}
 
       {favorites.length > 0 && (
         <div className="favorites-section">
-          <h3>Favorite Cities</h3>
+          <h3>⭐ Favorite Cities</h3>
           <div className="favorites-list">
             {favorites.map((f, i) => (
-              <div key={i} className="favorite-item">{f}</div>
+              <div key={i} className="favorite-item">
+                {f}
+              </div>
             ))}
           </div>
         </div>
