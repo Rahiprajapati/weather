@@ -1,164 +1,182 @@
-/* Main container */
+/* ===== Weather App Container ===== */
 .weather-container {
+  min-height: 100vh;
+  background: linear-gradient(to bottom right, #87cefa, #f0f8ff);
+  background-image: url("https://images.unsplash.com/photo-1506744038136-46273834b3fb?auto=format&fit=crop&w=1950&q=80");
+  background-size: cover;
+  background-position: center;
+  background-attachment: fixed;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 30px 20px;
+  font-family: "Poppins", sans-serif;
+}
+
+/* ===== Title ===== */
+.title {
+  font-size: 2.5rem;
+  color: #ffffff;
+  text-shadow: 0 3px 6px rgba(0, 0, 0, 0.3);
+  margin-bottom: 25px;
+}
+
+/* ===== Search Section ===== */
+.search-box {
   display: flex;
   justify-content: center;
   align-items: flex-start;
-  min-height: 100vh;
-  background: linear-gradient(135deg, #1e88e5, #0d47a1);
-  padding: 40px 20px;
-}
-
-/* Weather app box */
-.weather-box {
-  background: #fff;
-  border-radius: 20px;
-  padding: 30px;
-  width: 100%;
-  max-width: 900px;
-  box-shadow: 0 6px 25px rgba(0, 0, 0, 0.2);
-  text-align: center;
-}
-
-/* Title */
-.weather-title {
-  font-size: 1.9rem;
-  margin-bottom: 25px;
-  color: #0d47a1;
-  font-weight: 700;
-}
-
-/* Dropdown & Button controls */
-.controls {
-  display: flex;
   gap: 10px;
-  justify-content: center;
-  margin-bottom: 20px;
   flex-wrap: wrap;
+  margin-bottom: 40px;
+  position: relative;
 }
 
-.city-dropdown {
-  padding: 10px;
-  border: 2px solid #1e88e5;
-  border-radius: 10px;
-  font-size: 1rem;
-  width: 65%;
+.dropdown-wrapper {
+  position: relative;
+  width: 260px;
 }
 
-.get-btn {
-  background-color: #1e88e5;
-  color: white;
+.search-box input {
+  padding: 12px 15px;
   border: none;
   border-radius: 10px;
-  padding: 10px 18px;
-  cursor: pointer;
-  transition: 0.3s;
-}
-.get-btn:hover {
-  background-color: #1565c0;
-}
-
-/* City list grid */
-.city-list {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-  gap: 18px;
-  margin-top: 25px;
-}
-
-/* City card */
-.city-card {
-  background: #f1faff;
-  border: 2px solid #1e88e5;
-  border-radius: 15px;
-  padding: 15px 20px;
-  text-align: center;
-  animation: fadeIn 0.4s ease-in-out;
-  transition: transform 0.2s ease-in-out, box-shadow 0.2s ease-in-out;
-}
-
-.city-card:hover {
-  transform: translateY(-5px);
-  box-shadow: 0 6px 12px rgba(0, 0, 0, 0.1);
-}
-
-.city-card h3 {
-  margin: 0;
-  font-size: 1.3rem;
-  color: #0d47a1;
-}
-
-.city-card p {
-  margin: 5px 0;
+  outline: none;
+  width: 100%;
+  background: rgba(255, 255, 255, 0.85);
+  box-shadow: 0 3px 8px rgba(0, 0, 0, 0.15);
   font-size: 1rem;
   color: #333;
 }
 
-/* Add & Remove buttons */
+/* Dropdown */
+.dropdown {
+  position: absolute;
+  top: 45px;
+  left: 0;
+  right: 0;
+  background: white;
+  border-radius: 8px;
+  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.15);
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  max-height: 180px;
+  overflow-y: auto;
+  z-index: 10;
+}
+
+.dropdown li {
+  padding: 10px 15px;
+  cursor: pointer;
+  transition: background 0.2s ease;
+}
+
+.dropdown li:hover {
+  background: #f0f0f0;
+}
+
+/* Get Weather Button */
+.search-box button {
+  background: #1e88e5;
+  color: white;
+  border: none;
+  padding: 12px 22px;
+  font-size: 1rem;
+  border-radius: 10px;
+  position: relative;
+  left: 30px;
+  cursor: pointer;
+  transition: background 0.3s ease, transform 0.2s ease;
+}
+
+.search-box button:hover {
+  background: #1565c0;
+  transform: translateY(-2px);
+}
+
+/* ===== Weather Card ===== */
+.weather-card {
+  background: rgba(255, 255, 255, 0.15);
+  backdrop-filter: blur(10px);
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  border-radius: 16px;
+  padding: 25px;
+  margin: 20px;
+  width: 320px;
+  color: #fff;
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.15);
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.weather-card:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
+}
+
+.weather-card p {
+  margin: 6px 0;
+  font-size: 0.95rem;
+}
+
+/* ===== Buttons ===== */
 .add-btn,
 .remove-btn {
-  margin-top: 10px;
-  padding: 8px 14px;
+  width: 100%;
+  margin-top: 12px;
+  padding: 10px 0;
   border: none;
-  border-radius: 10px;
+  border-radius: 8px;
   cursor: pointer;
-  font-size: 0.95rem;
-  color: #fff;
-  transition: 0.3s;
+  font-size: 1rem;
+  font-weight: 500;
+  transition: all 0.3s ease;
 }
 
 .add-btn {
-  background-color: #1e88e5;
+  background: #1e88e5;
+  color: white;
 }
+
 .add-btn:hover {
-  background-color: #1565c0;
+  background: #1565c0;
 }
 
 .remove-btn {
-  background-color: #f44336;
+  background: #e53935;
+  color: white;
 }
+
 .remove-btn:hover {
-  background-color: #c62828;
+  background: #c62828;
 }
 
-/* Empty state */
-.empty {
-  color: #555;
-  font-style: italic;
-  margin-top: 20px;
+/* ===== Favorites Section ===== */
+.fav-title {
+  margin-top: 40px;
+  font-size: 1.8rem;
+  font-weight: 600;
+  color: #fff;
+  text-shadow: 0 2px 5px rgba(0, 0, 0, 0.3);
 }
 
-/* Preview card (before add) */
-.preview {
-  background: #e3f2fd;
-  border-style: dashed;
-  margin-top: 15px;
+.card-container {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 25px;
+  margin-top: 25px;
 }
 
-/* Fade animation */
-@keyframes fadeIn {
-  from { opacity: 0; transform: translateY(10px); }
-  to { opacity: 1; transform: translateY(0); }
-}
-
-/* Responsive design */
-@media (max-width: 600px) {
-  .weather-box {
-    padding: 20px;
-  }
-
-  .city-dropdown {
+/* ===== Responsive ===== */
+@media (max-width: 768px) {
+  .weather-card {
     width: 100%;
   }
-
-  .get-btn, .add-btn, .remove-btn {
-    width: 100%;
+  .search-box {
+    flex-direction: column;
   }
-
-  .city-card h3 {
-    font-size: 1.1rem;
-  }
-
-  .city-card p {
-    font-size: 0.95rem;
+  .search-box button{
+    left: 80px;
   }
 }
