@@ -1,131 +1,155 @@
+
+
 import React, { useState, useEffect } from "react";
-import "./weather.css";
+import "../components/CSS/weather.css";
 
-const API_KEY = "ddf790bfc6568bddb64d0be20664f6f9";
+const indianCities = [
+  "Mumbai", "Delhi", "Bangalore", "Hyderabad", "Ahmedabad", "Chennai",
+  "Kolkata", "Pune", "Jaipur", "Surat", "Lucknow", "Nagpur", "Indore",
+  "Bhopal", "Vadodara", "Patna", "Ludhiana", "Agra", "Nashik", "Rajkot"
+];
 
-const Weather = () => {
-  const [city, setCity] = useState("");
-  const [weather, setWeather] = useState(null);
-  const [favorites, setFavorites] = useState([]);
-  const [error, setError] = useState("");
-  const [suggestions, setSuggestions] = useState([]);
+const WeatherApp = () => {
+  const [selectedCity, setSelectedCity] = useState("");
+  const [addedCities, setAddedCities] = useState([]);
+  const [weatherData, setWeatherData] = useState({});
+  const [currentWeather, setCurrentWeather] = useState(null);
 
-  // Fetch weather
-  const fetchWeather = async () => {
-    if (!city.trim()) return;
+  const apiKey = "ddf790bfc6568bddb64d0be20664f6f9"; // Replace with your OpenWeather API key
+
+  // Load saved cities from localStorage
+  useEffect(() => {
+    const saved = JSON.parse(localStorage.getItem("addedCities")) || [];
+    setAddedCities(saved);
+  }, []);
+
+  // Fetch weather for saved cities
+  useEffect(() => {
+    if (addedCities.length > 0) {
+      addedCities.forEach(async (city) => {
+        const data = await fetchWeather(city);
+        if (data) {
+          setWeatherData((prev) => ({ ...prev, [city]: data }));
+        }
+      });
+    }
+  }, [addedCities]);
+
+  // Helper function to fetch weather
+  const fetchWeather = async (city) => {
     try {
       const res = await fetch(
-        `https://api.openweathermap.org/data/2.5/weather?q=${city},IN&appid=${API_KEY}&units=metric`
+        `https://api.openweathermap.org/data/2.5/weather?q=${city},IN&appid=${apiKey}&units=metric`
       );
-      if (!res.ok) throw new Error("City not found");
       const data = await res.json();
-      setWeather(data);
-      setError("");
+      if (data.cod === 200) return data;
+      return null;
     } catch (err) {
-      setError("City not found. Try another one.");
-      setWeather(null);
+      console.error("Error fetching weather:", err);
+      return null;
     }
   };
 
-  // Handle input + fetch Indian city suggestions
-  const handleCityChange = async (value) => {
-    setCity(value);
-    if (value.length > 2) {
-      try {
-        const res = await fetch(
-          `https://api.openweathermap.org/geo/1.0/direct?q=${value},IN&limit=5&appid=${API_KEY}`
-        );
-        const data = await res.json();
-        setSuggestions(data);
-      } catch (err) {
-        console.error(err);
-      }
-    } else {
-      setSuggestions([]);
-    }
+  // Fetch current selected city
+  const handleGetWeather = async () => {
+    if (!selectedCity) return;
+    const data = await fetchWeather(selectedCity);
+    setCurrentWeather(data);
   };
 
-  const addFavorite = (name) => {
-    if (!favorites.includes(name)) {
-      setFavorites([...favorites, name]);
-    }
+  // Add selected city to favorites
+  const handleAddCity = () => {
+    if (!selectedCity || addedCities.includes(selectedCity)) return;
+    const newCities = [...addedCities, selectedCity];
+    setAddedCities(newCities);
+    localStorage.setItem("addedCities", JSON.stringify(newCities));
+    setWeatherData((prev) => ({ ...prev, [selectedCity]: currentWeather }));
+    setCurrentWeather(null);
+  };
+
+  // Remove city from favorites
+  const handleRemoveCity = (city) => {
+    const updated = addedCities.filter((c) => c !== city);
+    setAddedCities(updated);
+    localStorage.setItem("addedCities", JSON.stringify(updated));
+    setWeatherData((prev) => {
+      const copy = { ...prev };
+      delete copy[city];
+      return copy;
+    });
   };
 
   return (
     <div className="weather-container">
-      <div className="header">
-        <h2>🌤️ Weather App</h2>
-        <button className="login-btn">Login</button>
-      </div>
+      <div className="weather-box">
+        <h2 className="weather-title">🌤️ Indian Weather Dashboard</h2>
 
-      <div className="search-container">
-        <div className="input-wrapper">
-          <input
-            type="text"
-            placeholder="Enter Indian city name..."
-            value={city}
-            onChange={(e) => handleCityChange(e.target.value)}
-            onKeyPress={(e) => e.key === "Enter" && fetchWeather()}
-          />
-          {suggestions.length > 0 && (
-            <ul className="suggestion-list">
-              {suggestions.map((item, index) => (
-                <li
-                  key={index}
-                  onClick={() => {
-                    setCity(item.name);
-                    setSuggestions([]);
-                  }}
-                >
-                  {item.name}, {item.state ? `${item.state}, ` : ""}India
-                </li>
-              ))}
-            </ul>
+        <div className="controls">
+          <select
+            className="city-dropdown"
+            value={selectedCity}
+            onChange={(e) => setSelectedCity(e.target.value)}
+          >
+            <option value="">Select a City</option>
+            {indianCities.map((city) => (
+              <option key={city} value={city}>
+                {city}
+              </option>
+            ))}
+          </select>
+          <button className="get-btn" onClick={handleGetWeather}>
+            Get Weather
+          </button>
+        </div>
+
+        {/* Show preview card before adding */}
+        {currentWeather && (
+          <div className="city-card preview">
+            <h3>{currentWeather.name}</h3>
+            <p>🌡️ Temp: {currentWeather.main.temp}°C</p>
+            <p>💧 Humidity: {currentWeather.main.humidity}%</p>
+            <p>🌬️ Wind: {currentWeather.wind.speed} m/s</p>
+            <p>👁️ Visibility: {currentWeather.visibility / 1000} km</p>
+            <button className="add-btn" onClick={handleAddCity}>
+              Add
+            </button>
+          </div>
+        )}
+
+        {/* City cards grid */}
+        <div className="city-list">
+          {addedCities.length === 0 ? (
+            <p className="empty">No saved cities 🌧️</p>
+          ) : (
+            addedCities.map((city) => {
+              const data = weatherData[city];
+              return (
+                <div key={city} className="city-card">
+                  <h3>{city}</h3>
+                  {data ? (
+                    <>
+                      <p>🌡️ Temp: {data.main.temp}°C</p>
+                      <p>💧 Humidity: {data.main.humidity}%</p>
+                      <p>🌬️ Wind: {data.wind.speed} m/s</p>
+                      <p>👁️ Visibility: {data.visibility / 1000} km</p>
+                    </>
+                  ) : (
+                    <p>Loading...</p>
+                  )}
+                  <button
+                    className="remove-btn"
+                    onClick={() => handleRemoveCity(city)}
+                  >
+                    Remove
+                  </button>
+                </div>
+              );
+            })
           )}
         </div>
-        <button onClick={fetchWeather}>Get Weather</button>
       </div>
-
-      {error && <div className="error">{error}</div>}
-
-      {weather && (
-        <div className="weather-results">
-          <div className="weather-card">
-            <div className="card-header">
-              <h3>{weather.name}</h3>
-              <button
-                className="favorite-btn"
-                onClick={() => addFavorite(weather.name)}
-              >
-                ★
-              </button>
-            </div>
-            <img
-              src={`https://openweathermap.org/img/wn/${weather.weather[0].icon}@2x.png`}
-              alt="icon"
-            />
-            <p className="main-type">{weather.weather[0].main}</p>
-            <p>🌡️ {weather.main.temp.toFixed(1)}°C</p>
-            <p>💧 {weather.main.humidity}% Humidity</p>
-            <p>🌬️ {weather.wind.speed} m/s Wind</p>
-          </div>
-        </div>
-      )}
-
-      {favorites.length > 0 && (
-        <div className="favorites-section">
-          <h3>⭐ Favorite Cities</h3>
-          <div className="favorites-list">
-            {favorites.map((f, i) => (
-              <div key={i} className="favorite-item">
-                {f}
-              </div>
-            ))}
-          </div>
-        </div>
-      )}
     </div>
   );
 };
 
-export default Weather;
+export default WeatherApp;
