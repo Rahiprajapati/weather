@@ -14,7 +14,7 @@ const Weather = () => {
     if (!city) return;
     try {
       const res = await fetch(
-        `https://api.openweathermap.org/data/2.5/weather?q=${city}&units=metric&appid=${API_KEY}`
+        `https://api.openweathermap.org/data/2.5/weather?q=${city},IN&units=metric&appid=${API_KEY}`
       );
       if (!res.ok) throw new Error("City not found");
       const data = await res.json();
@@ -27,7 +27,7 @@ const Weather = () => {
     }
   };
 
-  // Fetch suggestions
+  // Fetch Indian city suggestions only
   const fetchSuggestions = async (value) => {
     if (value.length < 3) {
       setSuggestions([]);
@@ -35,10 +35,12 @@ const Weather = () => {
     }
     try {
       const res = await fetch(
-        `https://api.openweathermap.org/geo/1.0/direct?q=${value}&limit=5&appid=${API_KEY}`
+        `https://api.openweathermap.org/geo/1.0/direct?q=${value},IN&limit=10&appid=${API_KEY}`
       );
       const data = await res.json();
-      setSuggestions(data);
+      // Filter only Indian cities (country === "IN")
+      const indianCities = data.filter((item) => item.country === "IN");
+      setSuggestions(indianCities);
     } catch {
       setSuggestions([]);
     }
@@ -46,12 +48,12 @@ const Weather = () => {
 
   return (
     <div className="weather-container">
-      <h2 className="app-title">🌤️ Weather Finder</h2>
+      <h2 className="app-title">🌤️ India Weather Finder</h2>
 
       <div className="search-container">
         <input
           type="text"
-          placeholder="Search for a city..."
+          placeholder="Search Indian city..."
           value={city}
           onChange={(e) => {
             setCity(e.target.value);
@@ -72,7 +74,7 @@ const Weather = () => {
                 }}
               >
                 {item.name}
-                {item.state ? `, ${item.state}` : ""}, {item.country}
+                {item.state ? `, ${item.state}` : ""}
               </li>
             ))}
           </ul>
@@ -83,7 +85,9 @@ const Weather = () => {
 
       {weather && (
         <div className="weather-card">
-          <h3>{weather.name}, {weather.sys.country}</h3>
+          <h3>
+            {weather.name}, {weather.sys.country}
+          </h3>
           <img
             src={`https://openweathermap.org/img/wn/${weather.weather[0].icon}@2x.png`}
             alt="Weather Icon"
