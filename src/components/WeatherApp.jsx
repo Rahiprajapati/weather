@@ -3,7 +3,7 @@ import "./CSS/weather.css";
 
 const Weather = () => {
   const [city, setCity] = useState("");
-  const [weatherData, setWeatherData] = useState([]); 
+  const [weatherData, setWeatherData] = useState([]);
   const [error, setError] = useState(null);
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [username, setUsername] = useState("");
@@ -12,24 +12,25 @@ const Weather = () => {
   const [isDarkTheme, setIsDarkTheme] = useState(false);
   const [favorites, setFavorites] = useState([]);
   const [currentUser, setCurrentUser] = useState("");
+  const [suggestions, setSuggestions] = useState([]); // new: city suggestions
 
-  const API_KEY = "ddf790bfc6568bddb64d0be20664f6f9"; 
+  const API_KEY = "ddf790bfc6568bddb64d0be20664f6f9";
 
   // Load saved data on component mount
   useEffect(() => {
     const loggedInStatus = localStorage.getItem("weatherAppLoggedIn");
     const savedUsername = localStorage.getItem("weatherAppUsername");
-    
+
     if (loggedInStatus === "true" && savedUsername) {
       setIsLoggedIn(true);
       setCurrentUser(savedUsername);
-      
+
       const savedWeatherData = JSON.parse(localStorage.getItem("weatherData") || "[]");
       setWeatherData(savedWeatherData);
-      
+
       loadUserFavorites(savedUsername);
     }
-    
+
     const savedTheme = localStorage.getItem("weatherAppTheme");
     if (savedTheme === "dark") {
       setIsDarkTheme(true);
@@ -61,7 +62,7 @@ const Weather = () => {
       return;
     }
 
-    setError(null); 
+    setError(null);
 
     try {
       const response = await fetch(
@@ -73,8 +74,8 @@ const Weather = () => {
       }
 
       const data = await response.json();
-      
-      const cityExists = weatherData.some(item => item.name === data.name);
+
+      const cityExists = weatherData.some((item) => item.name === data.name);
       if (!cityExists) {
         setWeatherData((previousWeatherData) => {
           const newData = [...previousWeatherData, data];
@@ -84,8 +85,9 @@ const Weather = () => {
           return newData;
         });
       }
-      
-      setCity(""); 
+
+      setCity("");
+      setSuggestions([]); // hide suggestions after fetching
     } catch (error) {
       setError(error.message);
     }
@@ -105,8 +107,6 @@ const Weather = () => {
       setError("Please enter both username and password");
     }
   };
-
-
 
   const handleLogout = () => {
     setIsLoggedIn(false);
@@ -129,11 +129,11 @@ const Weather = () => {
 
   const toggleFavorite = (cityData) => {
     if (!isLoggedIn || !currentUser) return;
-    
-    const isFavorite = favorites.some(fav => fav.name === cityData.name);
-    
+
+    const isFavorite = favorites.some((fav) => fav.name === cityData.name);
+
     if (isFavorite) {
-      const newFavorites = favorites.filter(fav => fav.name !== cityData.name);
+      const newFavorites = favorites.filter((fav) => fav.name !== cityData.name);
       setFavorites(newFavorites);
       saveUserFavorites(currentUser, newFavorites);
     } else {
@@ -145,7 +145,7 @@ const Weather = () => {
 
   const getWeatherBasedTheme = (weatherType) => {
     if (!weatherType) return {};
-    
+
     const weatherLower = weatherType.toLowerCase();
     if (weatherLower.includes("rain") || weatherLower.includes("drizzle")) {
       return { backgroundColor: "#607d8b", color: "#fff" };
@@ -164,9 +164,9 @@ const Weather = () => {
 
   const getActivitySuggestions = (weatherType, temp) => {
     if (!weatherType) return [];
-    
+
     const weatherLower = weatherType.toLowerCase();
-    
+
     if (weatherLower.includes("clear") && temp > 20) {
       return ["Beach visit", "Hiking", "Outdoor dining", "Park picnic"];
     } else if (weatherLower.includes("clear") && temp <= 20) {
@@ -183,24 +183,25 @@ const Weather = () => {
   };
 
   return (
-    <div className={`weather-container ${isDarkTheme ? 'dark-theme' : 'light-theme'}`}>
+    <div className={`weather-container ${isDarkTheme ? "dark-theme" : "light-theme"}`}>
       <div className="header">
         <h2>🌤 Weather App</h2>
         <div className="header-controls">
           <button className="theme-toggle" onClick={toggleTheme}>
             {isDarkTheme ? "☀️ Light" : "🌙 Dark"}
           </button>
-          
+
           {!isLoggedIn ? (
             <div className="auth-buttons">
               <button onClick={() => setShowLogin(true)}>Login</button>
-              {/* <button onClick={() => setShowRegister(true)}>Register</button> */}
             </div>
           ) : (
             <div className="user-actions">
               <div className="user-info">
                 <span>Welcome, {currentUser}</span>
-                {favorites.length > 0 && <span className="favorites-count">{favorites.length} ❤️</span>}
+                {favorites.length > 0 && (
+                  <span className="favorites-count">{favorites.length} ❤️</span>
+                )}
               </div>
               <button onClick={handleLogout}>Logout</button>
             </div>
@@ -208,15 +209,50 @@ const Weather = () => {
         </div>
       </div>
 
+      {/* Search with Suggestions */}
       <div className="search-container">
         <input
           type="text"
           placeholder="Enter city name..."
           value={city}
-          onChange={(e) => setCity(e.target.value)}
-          onKeyPress={(e) => e.key === 'Enter' && fetchWeather()}
+          onChange={async (e) => {
+            const value = e.target.value;
+            setCity(value);
+
+            if (value.length > 2) {
+              try {
+                const res = await fetch(
+                  `https://api.openweathermap.org/geo/1.0/direct?q=${value}&limit=5&appid=${API_KEY}`
+                );
+                const data = await res.json();
+                setSuggestions(data);
+              } catch (err) {
+                console.error(err);
+              }
+            } else {
+              setSuggestions([]);
+            }
+          }}
+          onKeyPress={(e) => e.key === "Enter" && fetchWeather()}
         />
         <button onClick={fetchWeather}>Get Weather</button>
+
+        {suggestions.length > 0 && (
+          <ul className="suggestion-list">
+            {suggestions.map((item, index) => (
+              <li
+                key={index}
+                onClick={() => {
+                  setCity(item.name);
+                  setSuggestions([]);
+                }}
+              >
+                {item.name}, {item.state ? item.state + ", " : ""}
+                {item.country}
+              </li>
+            ))}
+          </ul>
+        )}
       </div>
 
       {error && <p className="error">{error}</p>}
@@ -243,15 +279,15 @@ const Weather = () => {
         </div>
       )}
 
-
-
       {isLoggedIn && favorites.length > 0 && (
         <div className="favorites-section">
           <h3>Your Favorite Cities</h3>
           <div className="favorites-list">
             {favorites.map((fav, index) => (
               <div key={index} className="favorite-item">
-                <span>{fav.name}, {fav.sys.country}</span>
+                <span>
+                  {fav.name}, {fav.sys.country}
+                </span>
                 <img
                   src={`https://openweathermap.org/img/wn/${fav.weather[0].icon}.png`}
                   alt={fav.weather[0].description}
@@ -267,21 +303,20 @@ const Weather = () => {
         {weatherData.map((weather, index) => {
           const weatherType = weather.weather[0].main;
           const weatherTheme = getWeatherBasedTheme(weatherType);
-          const activitySuggestions = getActivitySuggestions(weatherType, weather.main.temp);
-          const isFavorite = favorites.some(fav => fav.name === weather.name);
-          
+          const activitySuggestions = getActivitySuggestions(
+            weatherType,
+            weather.main.temp
+          );
+          const isFavorite = favorites.some((fav) => fav.name === weather.name);
+
           return (
-            <div 
-              key={index} 
-              className="weather-card"
-              style={weatherTheme}
-            >
+            <div key={index} className="weather-card" style={weatherTheme}>
               <div className="card-header">
                 <h3>
                   {weather.name}, {weather.sys.country}
                 </h3>
                 {isLoggedIn && (
-                  <button 
+                  <button
                     className="favorite-btn"
                     onClick={() => toggleFavorite(weather)}
                   >
@@ -298,11 +333,7 @@ const Weather = () => {
               <p>💧 Humidity: {weather.main.humidity}%</p>
               <p>💨 Wind Speed: {weather.wind.speed} m/s</p>
               <p>🕒 Updated at: {new Date(weather.dt * 1000).toLocaleTimeString()}</p>
-              <p>🗺️ Coordinates: {weather.coord.lat}, {weather.coord.lon}</p> 
-              
-              <p>🌡 Min Temp: {weather.main.temp_min}°C</p>
-              <p>🌡 Max Temp: {weather.main.temp_max}°C</p>
-              <p>🌡 Pressure: {weather.main.pressure} hPa</p>
+              <p>🗺️ Coordinates: {weather.coord.lat}, {weather.coord.lon}</p>
 
               <div className="suggestions">
                 <h4>Suggested Activities:</h4>
