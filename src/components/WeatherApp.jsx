@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import "./weather.css";
 
-const API_KEY = "YOUR_OPENWEATHERMAP_API_KEY"; // replace with your key
+const API_KEY = "ddf790bfc6568bddb64d0be20664f6f9"; 
 
 const Weather = () => {
   const [city, setCity] = useState("");
@@ -15,7 +15,7 @@ const Weather = () => {
     document.body.classList.toggle("dark-theme", darkMode);
   }, [darkMode]);
 
-  // Fetch weather data
+  // Fetch weather
   const fetchWeather = async () => {
     if (!city.trim()) return;
     try {
@@ -32,7 +32,7 @@ const Weather = () => {
     }
   };
 
-  // Fetch Indian city suggestions
+  // Handle input + fetch Indian city suggestions
   const handleCityChange = async (value) => {
     setCity(value);
     if (value.length > 2) {
@@ -50,7 +50,6 @@ const Weather = () => {
     }
   };
 
-  // Add to favorites
   const addFavorite = (name) => {
     if (!favorites.includes(name)) {
       setFavorites([...favorites, name]);
